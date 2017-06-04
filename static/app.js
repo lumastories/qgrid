@@ -12861,25 +12861,115 @@ var _krisajenkins$remotedata$RemoteData$update = F2(
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$view = function (model) {
+var _user$project$Main$row = F2(
+	function (names, row_name) {
+		return A2(
+			_elm_lang$html$Html$tr,
+			{ctor: '[]'},
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$td,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(row_name),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				A2(
+					_elm_lang$core$List$map,
+					function (n) {
+						return A2(
+							_elm_lang$html$Html$td,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(n),
+								_1: {ctor: '[]'}
+							});
+					},
+					names)));
+	});
+var _user$project$Main$matrix = function (m) {
 	return A2(
-		_elm_lang$html$Html$h1,
+		_elm_lang$html$Html$div,
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text(model.content),
-			_1: {ctor: '[]'}
+			_0: A2(
+				_elm_lang$html$Html$h1,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(m.name),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$table,
+					{ctor: '[]'},
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$tr,
+								{ctor: '[]'},
+								A2(
+									_elm_lang$core$List$map,
+									function (n) {
+										return A2(
+											_elm_lang$html$Html$td,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(n),
+												_1: {ctor: '[]'}
+											});
+									},
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										{
+											ctor: '::',
+											_0: '',
+											_1: {ctor: '[]'}
+										},
+										m.col_names))),
+							_1: {ctor: '[]'}
+						},
+						A3(_elm_lang$core$List$map2, _user$project$Main$row, m.grid, m.row_names))),
+				_1: {ctor: '[]'}
+			}
 		});
+};
+var _user$project$Main$view = function (model) {
+	var _p0 = model.matrixs;
+	switch (_p0.ctor) {
+		case 'Loading':
+			return _elm_lang$html$Html$text('Loading...');
+		case 'Success':
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				A2(_elm_lang$core$List$map, _user$project$Main$matrix, _p0._0));
+		default:
+			return _elm_lang$html$Html$text('');
+	}
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		if (_p0.ctor === 'MatrixsResp') {
+		var _p1 = msg;
+		if (_p1.ctor === 'MatrixsResp') {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
 					model,
-					{matrixs: _p0._0}),
+					{matrixs: _p1._0}),
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		} else {
