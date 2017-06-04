@@ -96,25 +96,15 @@ matrix m =
     div []
         [ h1 [] [ text m.name ]
         , table [] <|
-            [tr [] (List.map (\n -> td [] [ text n ]) ([""] ++ m.col_names))]
-            ++ (List.map2 row m.grid m.row_names)
+            [ tr [] (List.map (\n -> td [] [ text n ]) ([ "" ] ++ m.col_names)) ]
+                ++ (List.map2 row m.grid m.row_names)
         ]
 
-row names row_name =  
-    tr [] <| [td [] [text row_name]] ++ (List.map (\n -> td [] [ text n ]) names)
 
-
-{--
-
-grid = [["text00","text01","text02"]
-       ,["text10","text11","text12"]
-       ,["text20","text21","text22"]],
-
-row_names = ["row0","row1","row2"],
-
-col_names = ["col0","col1","col2"]
-
---}
+row names row_name =
+    tr [] <| 
+      [ td [] [ text row_name ] ] 
+      ++ (List.map (\n -> td [] [ text n ]) names)
 
 
 
