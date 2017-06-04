@@ -15,6 +15,7 @@ type alias Model =
     { content : String
     , matrixs : WebData (List Matrix)
     , page : Page
+    , matrixBuilder : List (List Cell)
     }
 
 
@@ -23,10 +24,23 @@ type Page
     | MakeMatrix
 
 
+type Cell
+    = AddRow
+    | AddCol
+    | ReqName
+    | Wink
+    | Todo
+
+
 initModel =
     { content = "Hello!"
     , matrixs = NotAsked
     , page = Home
+    , matrixBuilder =
+        [ [ Wink, ReqName, AddCol ]
+        , [ ReqName, Todo, Todo ]
+        , [ AddRow, Todo, Todo ]
+        ]
     }
 
 
@@ -71,6 +85,8 @@ decodeMatrix =
 type Msg
     = Visit Page
     | MatrixsResp (WebData (List Matrix))
+    | ColAdded
+    | RowAdded
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -81,6 +97,16 @@ update msg model =
 
         Visit page ->
             ( { model | page = page }, Cmd.none )
+
+        RowAdded ->
+            let
+                matrixBuilder_ =
+                    model.matrixBuilder ++ [ [ AddRow, Todo, Todo ] ]
+            in
+                { model | matrixBuilder = matrixBuilder_ } ! []
+
+        ColAdded ->
+            model ! []
 
 
 
@@ -98,18 +124,24 @@ view model =
 
 
 link page text_ =
-    a [ onClick <| Visit page, href "#" ] [ text text_ ]
+    li []
+        [ a [ onClick <| Visit page, href "#" ]
+            [ text text_ ]
+        ]
+
+
+nav =
+    [ ul []
+        [ link Home "Home"
+        , link MakeMatrix "Make a Matrix"
+        ]
+    ]
 
 
 basePage child =
-    div [] [ link Home "Home", link MakeMatrix "Make a Matrix", child ]
-
-
-makeMatrixPage model =
-    div [] [ h1 [] [ text "Make a Matrix" ]
-            , button [] [text "Add row"]
-            , button [] [text "Add column"] ]
-        |> basePage
+    nav
+        ++ [ child ]
+        |> div []
 
 
 homePage model =
@@ -122,7 +154,7 @@ homePage model =
                 div [] (matrixs |> List.map matrix)
 
             NotAsked ->
-                p [ style [ ( "background", "red" ) ] ] [ text "Loading..." ]
+                p [ style [ ( "background", "#eee" ), ( "padding", "2em" ) ] ] [ text "Loading..." ]
 
             Failure _ ->
                 text "Request failed :("
@@ -141,6 +173,45 @@ row names row_name =
     tr [] <|
         [ td [] [ text row_name ] ]
             ++ (List.map (\n -> td [] [ text n ]) names)
+
+
+makeMatrixPage model =
+    div []
+        [ h1 [] [ text "Make a Matrix" ]
+        , matrixBuild model
+        , button [] [ text "Share it" ]
+        , p [] [ text "the link to share" ]
+        ]
+        |> basePage
+
+
+matrixBuild model =
+    table []
+        (List.map initBuild model.matrixBuilder)
+
+
+initBuild row =
+    (List.map cell row)
+        |> tr []
+
+
+cell : Cell -> Html Msg
+cell c =
+    case c of
+        Wink ->
+            td [] [ text ";)" ]
+
+        ReqName ->
+            td [] [ input [ type_ "text" ] [] ]
+
+        AddRow ->
+            td [] [ button [ onClick RowAdded ] [ text "v" ] ]
+
+        AddCol ->
+            td [] [ button [ onClick ColAdded ] [ text "+" ] ]
+
+        Todo ->
+            td [] []
 
 
 

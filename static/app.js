@@ -13297,30 +13297,9 @@ var _user$project$Main$matrix = function (m) {
 			}
 		});
 };
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		if (_p0.ctor === 'MatrixsResp') {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{matrixs: _p0._0}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{page: _p0._0}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		}
-	});
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {content: a, matrixs: b, page: c};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {content: a, matrixs: b, page: c, matrixBuilder: d};
 	});
 var _user$project$Main$Matrix = F4(
 	function (a, b, c, d) {
@@ -13346,7 +13325,208 @@ var _user$project$Main$decodeMatrix = _elm_lang$core$Json_Decode$list(
 			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string))));
 var _user$project$Main$MakeMatrix = {ctor: 'MakeMatrix'};
 var _user$project$Main$Home = {ctor: 'Home'};
-var _user$project$Main$initModel = {content: 'Hello!', matrixs: _krisajenkins$remotedata$RemoteData$NotAsked, page: _user$project$Main$Home};
+var _user$project$Main$Todo = {ctor: 'Todo'};
+var _user$project$Main$Wink = {ctor: 'Wink'};
+var _user$project$Main$ReqName = {ctor: 'ReqName'};
+var _user$project$Main$AddCol = {ctor: 'AddCol'};
+var _user$project$Main$AddRow = {ctor: 'AddRow'};
+var _user$project$Main$initModel = {
+	content: 'Hello!',
+	matrixs: _krisajenkins$remotedata$RemoteData$NotAsked,
+	page: _user$project$Main$Home,
+	matrixBuilder: {
+		ctor: '::',
+		_0: {
+			ctor: '::',
+			_0: _user$project$Main$Wink,
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$ReqName,
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$AddCol,
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		_1: {
+			ctor: '::',
+			_0: {
+				ctor: '::',
+				_0: _user$project$Main$ReqName,
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$Todo,
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$Todo,
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '::',
+					_0: _user$project$Main$AddRow,
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$Todo,
+						_1: {
+							ctor: '::',
+							_0: _user$project$Main$Todo,
+							_1: {ctor: '[]'}
+						}
+					}
+				},
+				_1: {ctor: '[]'}
+			}
+		}
+	}
+};
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'MatrixsResp':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{matrixs: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Visit':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{page: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'RowAdded':
+				var matrixBuilder_ = A2(
+					_elm_lang$core$Basics_ops['++'],
+					model.matrixBuilder,
+					{
+						ctor: '::',
+						_0: {
+							ctor: '::',
+							_0: _user$project$Main$AddRow,
+							_1: {
+								ctor: '::',
+								_0: _user$project$Main$Todo,
+								_1: {
+									ctor: '::',
+									_0: _user$project$Main$Todo,
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						_1: {ctor: '[]'}
+					});
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{matrixBuilder: matrixBuilder_}),
+					{ctor: '[]'});
+			default:
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+		}
+	});
+var _user$project$Main$RowAdded = {ctor: 'RowAdded'};
+var _user$project$Main$ColAdded = {ctor: 'ColAdded'};
+var _user$project$Main$cell = function (c) {
+	var _p1 = c;
+	switch (_p1.ctor) {
+		case 'Wink':
+			return A2(
+				_elm_lang$html$Html$td,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(';)'),
+					_1: {ctor: '[]'}
+				});
+		case 'ReqName':
+			return A2(
+				_elm_lang$html$Html$td,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$input,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$type_('text'),
+							_1: {ctor: '[]'}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				});
+		case 'AddRow':
+			return A2(
+				_elm_lang$html$Html$td,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$RowAdded),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('v'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				});
+		case 'AddCol':
+			return A2(
+				_elm_lang$html$Html$td,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ColAdded),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('+'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				});
+		default:
+			return A2(
+				_elm_lang$html$Html$td,
+				{ctor: '[]'},
+				{ctor: '[]'});
+	}
+};
+var _user$project$Main$initBuild = function (row) {
+	return A2(
+		_elm_lang$html$Html$tr,
+		{ctor: '[]'},
+		A2(_elm_lang$core$List$map, _user$project$Main$cell, row));
+};
+var _user$project$Main$matrixBuild = function (model) {
+	return A2(
+		_elm_lang$html$Html$table,
+		{ctor: '[]'},
+		A2(_elm_lang$core$List$map, _user$project$Main$initBuild, model.matrixBuilder));
+};
 var _user$project$Main$MatrixsResp = function (a) {
 	return {ctor: 'MatrixsResp', _0: a};
 };
@@ -13371,22 +13551,34 @@ var _user$project$Main$Visit = function (a) {
 var _user$project$Main$link = F2(
 	function (page, text_) {
 		return A2(
-			_elm_lang$html$Html$a,
+			_elm_lang$html$Html$li,
+			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(
-					_user$project$Main$Visit(page)),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(text_),
+				_0: A2(
+					_elm_lang$html$Html$a,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_user$project$Main$Visit(page)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$href('#'),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(text_),
+						_1: {ctor: '[]'}
+					}),
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Main$basePage = function (child) {
-	return A2(
-		_elm_lang$html$Html$div,
+var _user$project$Main$nav = {
+	ctor: '::',
+	_0: A2(
+		_elm_lang$html$Html$ul,
 		{ctor: '[]'},
 		{
 			ctor: '::',
@@ -13394,44 +13586,36 @@ var _user$project$Main$basePage = function (child) {
 			_1: {
 				ctor: '::',
 				_0: A2(_user$project$Main$link, _user$project$Main$MakeMatrix, 'Make a Matrix'),
-				_1: {
-					ctor: '::',
-					_0: child,
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			}
-		});
+		}),
+	_1: {ctor: '[]'}
 };
-var _user$project$Main$homePage = function (model) {
-	return _user$project$Main$basePage(
+var _user$project$Main$basePage = function (child) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
 		A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Main$nav,
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$h1,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('home page'),
-						_1: {ctor: '[]'}
-					}),
+				_0: child,
 				_1: {ctor: '[]'}
 			}));
 };
-var _user$project$Main$makeMatrixPage = function (model) {
+var _user$project$Main$homePage = function (model) {
 	return _user$project$Main$basePage(
 		function () {
-			var _p1 = model.matrixs;
-			switch (_p1.ctor) {
+			var _p2 = model.matrixs;
+			switch (_p2.ctor) {
 				case 'Loading':
 					return _elm_lang$html$Html$text('LOADING');
 				case 'Success':
 					return A2(
 						_elm_lang$html$Html$div,
 						{ctor: '[]'},
-						A2(_elm_lang$core$List$map, _user$project$Main$matrix, _p1._0));
+						A2(_elm_lang$core$List$map, _user$project$Main$matrix, _p2._0));
 				case 'NotAsked':
 					return A2(
 						_elm_lang$html$Html$p,
@@ -13440,8 +13624,12 @@ var _user$project$Main$makeMatrixPage = function (model) {
 							_0: _elm_lang$html$Html_Attributes$style(
 								{
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'background', _1: 'red'},
-									_1: {ctor: '[]'}
+									_0: {ctor: '_Tuple2', _0: 'background', _1: '#eee'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'padding', _1: '2em'},
+										_1: {ctor: '[]'}
+									}
 								}),
 							_1: {ctor: '[]'}
 						},
@@ -13455,9 +13643,53 @@ var _user$project$Main$makeMatrixPage = function (model) {
 			}
 		}());
 };
+var _user$project$Main$makeMatrixPage = function (model) {
+	return _user$project$Main$basePage(
+		A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$h1,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Make a Matrix'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$matrixBuild(model),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$button,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Share it'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$p,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('the link to share'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}));
+};
 var _user$project$Main$view = function (model) {
-	var _p2 = model.page;
-	if (_p2.ctor === 'Home') {
+	var _p3 = model.page;
+	if (_p3.ctor === 'Home') {
 		return _user$project$Main$homePage(model);
 	} else {
 		return _user$project$Main$makeMatrixPage(model);
@@ -13469,7 +13701,7 @@ var _user$project$Main$main = _elm_lang$html$Html$program(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Success":["a"],"Loading":[],"Failure":["e"]}},"Main.Msg":{"args":[],"tags":{"MatrixsResp":["RemoteData.WebData (List Main.Matrix)"],"Visit":["Main.Page"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Main.Page":{"args":[],"tags":{"Home":[],"MakeMatrix":[]}}},"aliases":{"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Main.Matrix":{"args":[],"type":"{ name : String , grid : List (List String) , row_names : List String , col_names : List String }"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"RemoteData.RemoteData":{"args":["e","a"],"tags":{"NotAsked":[],"Success":["a"],"Loading":[],"Failure":["e"]}},"Main.Msg":{"args":[],"tags":{"MatrixsResp":["RemoteData.WebData (List Main.Matrix)"],"RowAdded":[],"ColAdded":[],"Visit":["Main.Page"]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Main.Page":{"args":[],"tags":{"Home":[],"MakeMatrix":[]}}},"aliases":{"RemoteData.WebData":{"args":["a"],"type":"RemoteData.RemoteData Http.Error a"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Main.Matrix":{"args":[],"type":"{ name : String , grid : List (List String) , row_names : List String , col_names : List String }"}},"message":"Main.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
