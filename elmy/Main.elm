@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import RemoteData exposing (..)
 import Http
@@ -13,12 +14,19 @@ import Json.Decode as JD
 type alias Model =
     { content : String
     , matrixs : WebData (List Matrix)
+    , page : Page
     }
+
+
+type Page
+    = Home
+    | MakeMatrix
 
 
 initModel =
     { content = "Hello!"
     , matrixs = NotAsked
+    , page = Home
     }
 
 
@@ -61,7 +69,7 @@ decodeMatrix =
 
 
 type Msg
-    = Reset
+    = Visit Page
     | MatrixsResp (WebData (List Matrix))
 
 
@@ -71,8 +79,8 @@ update msg model =
         MatrixsResp matrixs ->
             ( { model | matrixs = matrixs }, Cmd.none )
 
-        _ ->
-            ( model, Cmd.none )
+        Visit page ->
+            ( { model | page = page }, Cmd.none )
 
 
 
@@ -81,15 +89,43 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    case model.matrixs of
-        Loading ->
-            text "Loading..."
+    case model.page of
+        Home ->
+            homePage model
 
-        Success matrixs ->
-            div [] (matrixs |> List.map matrix)
+        MakeMatrix ->
+            makeMatrixPage model
 
-        _ ->
-            text ""
+
+link page text_ =
+    a [ onClick <| Visit page, href "#" ] [ text text_ ]
+
+
+basePage child =
+    div [] [ link Home "Home", link MakeMatrix "Make a Matrix", child ]
+
+
+makeMatrixPage model =
+    div [] [ h1 [] [ text "Make a Matrix" ]
+            , button [] [text "Add row"]
+            , button [] [text "Add column"] ]
+        |> basePage
+
+
+homePage model =
+    basePage <|
+        case model.matrixs of
+            Loading ->
+                text "LOADING"
+
+            Success matrixs ->
+                div [] (matrixs |> List.map matrix)
+
+            NotAsked ->
+                p [ style [ ( "background", "red" ) ] ] [ text "Loading..." ]
+
+            Failure _ ->
+                text "Request failed :("
 
 
 matrix m =
@@ -102,9 +138,9 @@ matrix m =
 
 
 row names row_name =
-    tr [] <| 
-      [ td [] [ text row_name ] ] 
-      ++ (List.map (\n -> td [] [ text n ]) names)
+    tr [] <|
+        [ td [] [ text row_name ] ]
+            ++ (List.map (\n -> td [] [ text n ]) names)
 
 
 

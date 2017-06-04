@@ -102,7 +102,7 @@ db.create_all()
 u = User(username='nate')
 db.session.add(u)
 
-for i in [1, 2, 3, 4]:
+for i in range(400):
     m = Matrix(name='Matrix ' + str(i), slug='123123' + str(i), user=u)
     db.session.add(m)
 
