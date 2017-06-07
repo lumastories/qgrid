@@ -3,9 +3,10 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import RemoteData exposing (..)
+import RemoteData exposing (WebData, RemoteData(..))
 import Http
 import Json.Decode as JD
+import Array exposing (Array)
 
 
 -- MODEL
@@ -16,6 +17,19 @@ type alias Model =
     , matrixs : WebData (List Matrix)
     , page : Page
     , matrixBuilder : List (List Cell)
+    }
+
+
+
+--Idea for data structure to back the matrix builder ui
+
+
+type alias ActiveMatrix =
+    { colCount : Int
+    , rowCount : Int
+    , cells : Array (Array Cell)
+    , title : String
+    , slug : String
     }
 
 
@@ -32,10 +46,11 @@ type Cell
     | Todo
 
 
+initModel : Model
 initModel =
     { content = "Hello!"
     , matrixs = NotAsked
-    , page = Home
+    , page = MakeMatrix
     , matrixBuilder =
         [ [ Wink, ReqName, AddCol ]
         , [ ReqName, Todo, Todo ]
@@ -123,6 +138,7 @@ view model =
             makeMatrixPage model
 
 
+link : Page -> String -> Html Msg
 link page text_ =
     li []
         [ a [ onClick <| Visit page, href "#" ]
@@ -130,6 +146,7 @@ link page text_ =
         ]
 
 
+nav : List (Html Msg)
 nav =
     [ ul []
         [ link Home "Home"
@@ -138,12 +155,14 @@ nav =
     ]
 
 
+basePage : Html Msg -> Html Msg
 basePage child =
     nav
         ++ [ child ]
         |> div []
 
 
+homePage : Model -> Html Msg
 homePage model =
     basePage <|
         case model.matrixs of
@@ -160,6 +179,7 @@ homePage model =
                 text "Request failed :("
 
 
+matrix : Matrix -> Html Msg
 matrix m =
     div []
         [ h1 [] [ text m.name ]
@@ -169,12 +189,14 @@ matrix m =
         ]
 
 
+row : List String -> String -> Html Msg
 row names row_name =
     tr [] <|
         [ td [] [ text row_name ] ]
             ++ (List.map (\n -> td [] [ text n ]) names)
 
 
+makeMatrixPage : Model -> Html Msg
 makeMatrixPage model =
     div []
         [ h1 [] [ text "Make a Matrix" ]
@@ -185,18 +207,20 @@ makeMatrixPage model =
         |> basePage
 
 
+matrixBuild : Model -> Html Msg
 matrixBuild model =
     table []
         (List.map initBuild model.matrixBuilder)
 
 
-initBuild row =
-    (List.map cell row)
+initBuild : List Cell -> Html Msg
+initBuild cells =
+    (List.map tdcell cells)
         |> tr []
 
 
-cell : Cell -> Html Msg
-cell c =
+tdcell : Cell -> Html Msg
+tdcell c =
     case c of
         Wink ->
             td [] [ text ";)" ]
@@ -227,6 +251,7 @@ subscriptions model =
 -- APP
 
 
+main : Program Never Model Msg
 main =
     Html.program
         { init = model

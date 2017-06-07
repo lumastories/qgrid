@@ -13301,6 +13301,10 @@ var _user$project$Main$Model = F4(
 	function (a, b, c, d) {
 		return {content: a, matrixs: b, page: c, matrixBuilder: d};
 	});
+var _user$project$Main$ActiveMatrix = F5(
+	function (a, b, c, d, e) {
+		return {colCount: a, rowCount: b, cells: c, title: d, slug: e};
+	});
 var _user$project$Main$Matrix = F4(
 	function (a, b, c, d) {
 		return {name: a, grid: b, row_names: c, col_names: d};
@@ -13333,7 +13337,7 @@ var _user$project$Main$AddRow = {ctor: 'AddRow'};
 var _user$project$Main$initModel = {
 	content: 'Hello!',
 	matrixs: _krisajenkins$remotedata$RemoteData$NotAsked,
-	page: _user$project$Main$Home,
+	page: _user$project$Main$MakeMatrix,
 	matrixBuilder: {
 		ctor: '::',
 		_0: {
@@ -13440,7 +13444,7 @@ var _user$project$Main$update = F2(
 	});
 var _user$project$Main$RowAdded = {ctor: 'RowAdded'};
 var _user$project$Main$ColAdded = {ctor: 'ColAdded'};
-var _user$project$Main$cell = function (c) {
+var _user$project$Main$tdcell = function (c) {
 	var _p1 = c;
 	switch (_p1.ctor) {
 		case 'Wink':
@@ -13515,11 +13519,11 @@ var _user$project$Main$cell = function (c) {
 				{ctor: '[]'});
 	}
 };
-var _user$project$Main$initBuild = function (row) {
+var _user$project$Main$initBuild = function (cells) {
 	return A2(
 		_elm_lang$html$Html$tr,
 		{ctor: '[]'},
-		A2(_elm_lang$core$List$map, _user$project$Main$cell, row));
+		A2(_elm_lang$core$List$map, _user$project$Main$tdcell, cells));
 };
 var _user$project$Main$matrixBuild = function (model) {
 	return A2(
