@@ -13299,7 +13299,7 @@ var _user$project$Main$matrix = function (m) {
 };
 var _user$project$Main$Model = F4(
 	function (a, b, c, d) {
-		return {content: a, matrixs: b, page: c, matrixBuilder: d};
+		return {content: a, matrixs: b, page: c, activeMatrix: d};
 	});
 var _user$project$Main$ActiveMatrix = F5(
 	function (a, b, c, d, e) {
@@ -13338,7 +13338,7 @@ var _user$project$Main$initModel = {
 	content: 'Hello!',
 	matrixs: _krisajenkins$remotedata$RemoteData$NotAsked,
 	page: _user$project$Main$MakeMatrix,
-	matrixBuilder: {
+	activeMatrix: {
 		ctor: '::',
 		_0: {
 			ctor: '::',
@@ -13409,44 +13409,65 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'RowAdded':
-				var matrixBuilder_ = A2(
-					_elm_lang$core$Basics_ops['++'],
-					model.matrixBuilder,
-					{
-						ctor: '::',
-						_0: {
-							ctor: '::',
-							_0: _user$project$Main$AddRow,
-							_1: {
+				var rowLength = A2(
+					_elm_lang$core$Maybe$map,
+					_elm_lang$core$List$length,
+					_elm_lang$core$List$head(model.activeMatrix));
+				var activeMatrix_ = function () {
+					var _p1 = rowLength;
+					if (_p1.ctor === 'Just') {
+						return A2(
+							_elm_lang$core$Basics_ops['++'],
+							model.activeMatrix,
+							{
 								ctor: '::',
-								_0: _user$project$Main$Todo,
-								_1: {
-									ctor: '::',
-									_0: _user$project$Main$Todo,
-									_1: {ctor: '[]'}
-								}
-							}
-						},
-						_1: {ctor: '[]'}
-					});
+								_0: A2(
+									_elm_lang$core$Basics_ops['++'],
+									{
+										ctor: '::',
+										_0: _user$project$Main$AddRow,
+										_1: {ctor: '[]'}
+									},
+									A2(_elm_lang$core$List$repeat, _p1._0 - 1, _user$project$Main$Todo)),
+								_1: {ctor: '[]'}
+							});
+					} else {
+						return {ctor: '[]'};
+					}
+				}();
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{matrixBuilder: matrixBuilder_}),
+						{activeMatrix: activeMatrix_}),
 					{ctor: '[]'});
 			default:
+				var activeMatrix_ = A2(
+					_elm_lang$core$List$map,
+					function (row) {
+						return A2(
+							_elm_lang$core$List$append,
+							row,
+							{
+								ctor: '::',
+								_0: _user$project$Main$Todo,
+								_1: {ctor: '[]'}
+							});
+					},
+					model.activeMatrix);
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{activeMatrix: activeMatrix_}),
 					{ctor: '[]'});
 		}
 	});
 var _user$project$Main$RowAdded = {ctor: 'RowAdded'};
 var _user$project$Main$ColAdded = {ctor: 'ColAdded'};
 var _user$project$Main$tdcell = function (c) {
-	var _p1 = c;
-	switch (_p1.ctor) {
+	var _p2 = c;
+	switch (_p2.ctor) {
 		case 'Wink':
 			return A2(
 				_elm_lang$html$Html$td,
@@ -13529,7 +13550,7 @@ var _user$project$Main$matrixBuild = function (model) {
 	return A2(
 		_elm_lang$html$Html$table,
 		{ctor: '[]'},
-		A2(_elm_lang$core$List$map, _user$project$Main$initBuild, model.matrixBuilder));
+		A2(_elm_lang$core$List$map, _user$project$Main$initBuild, model.activeMatrix));
 };
 var _user$project$Main$MatrixsResp = function (a) {
 	return {ctor: 'MatrixsResp', _0: a};
@@ -13611,15 +13632,15 @@ var _user$project$Main$basePage = function (child) {
 var _user$project$Main$homePage = function (model) {
 	return _user$project$Main$basePage(
 		function () {
-			var _p2 = model.matrixs;
-			switch (_p2.ctor) {
+			var _p3 = model.matrixs;
+			switch (_p3.ctor) {
 				case 'Loading':
 					return _elm_lang$html$Html$text('LOADING');
 				case 'Success':
 					return A2(
 						_elm_lang$html$Html$div,
 						{ctor: '[]'},
-						A2(_elm_lang$core$List$map, _user$project$Main$matrix, _p2._0));
+						A2(_elm_lang$core$List$map, _user$project$Main$matrix, _p3._0));
 				case 'NotAsked':
 					return A2(
 						_elm_lang$html$Html$p,
@@ -13692,8 +13713,8 @@ var _user$project$Main$makeMatrixPage = function (model) {
 			}));
 };
 var _user$project$Main$view = function (model) {
-	var _p3 = model.page;
-	if (_p3.ctor === 'Home') {
+	var _p4 = model.page;
+	if (_p4.ctor === 'Home') {
 		return _user$project$Main$homePage(model);
 	} else {
 		return _user$project$Main$makeMatrixPage(model);

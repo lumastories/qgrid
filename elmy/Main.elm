@@ -16,7 +16,7 @@ type alias Model =
     { content : String
     , matrixs : WebData (List Matrix)
     , page : Page
-    , matrixBuilder : List (List Cell)
+    , activeMatrix : List (List Cell)
     }
 
 
@@ -51,7 +51,7 @@ initModel =
     { content = "Hello!"
     , matrixs = NotAsked
     , page = MakeMatrix
-    , matrixBuilder =
+    , activeMatrix =
         [ [ Wink, ReqName, AddCol ]
         , [ ReqName, Todo, Todo ]
         , [ AddRow, Todo, Todo ]
@@ -115,13 +115,26 @@ update msg model =
 
         RowAdded ->
             let
-                matrixBuilder_ =
-                    model.matrixBuilder ++ [ [ AddRow, Todo, Todo ] ]
+                rowLength =
+                    List.head model.activeMatrix
+                        |> Maybe.map List.length
+
+                activeMatrix_ =
+                    case rowLength of
+                        Just i ->
+                            model.activeMatrix ++ [ [ AddRow ] ++ (List.repeat (i - 1) Todo) ]
+
+                        Nothing ->
+                            []
             in
-                { model | matrixBuilder = matrixBuilder_ } ! []
+                { model | activeMatrix = activeMatrix_ } ! []
 
         ColAdded ->
-            model ! []
+            let
+                activeMatrix_ =
+                    List.map (\row -> List.append row [ Todo ]) model.activeMatrix
+            in
+                { model | activeMatrix = activeMatrix_ } ! []
 
 
 
@@ -210,7 +223,7 @@ makeMatrixPage model =
 matrixBuild : Model -> Html Msg
 matrixBuild model =
     table []
-        (List.map initBuild model.matrixBuilder)
+        (List.map initBuild model.activeMatrix)
 
 
 initBuild : List Cell -> Html Msg
