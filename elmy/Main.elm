@@ -138,6 +138,7 @@ update msg model =
 
 
 
+--Dict Int (Dict Int String)  (Int would be the index)
 -- VIEW
 
 
