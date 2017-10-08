@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from flask import Flask, json, jsonify, render_template, request
+from flask_jwt import JWT, current_identity, jwt_required
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)  # our wsgi app
 
@@ -16,6 +18,17 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
+    password_hash = db.Column(db.String(128))
+
+    @property
+    def password(self):
+        raise AttributeError('`password` is not a readable attribute')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def __init__(self, username):
         self.username = username
@@ -100,6 +113,7 @@ db.create_all()
 # make a user with four 3x3 labeled and populated matricies
 
 u = User(username='nate')
+u.set_password('123baby')
 db.session.add(u)
 
 for i in range(400):
@@ -118,10 +132,22 @@ for i in range(400):
 
 db.session.commit()
 
-### end mock data
+### ----------------- end mock data
 
+## API
 
-### API
+### Auth
+
+def authenticate(username, password):
+    user = User.query.get(username=username)
+    if user and user.verify_password(password.encode('utf-8')):
+        return user
+
+def identity(payload):
+    user_id = payload['identity']
+    return User.query.get(id=user_id)
+
+jwt = JWT(app, authenticate, identity)
 
 resources = {'auth': 'POST /api/auth',
              'matrix': 'GET, PUT, POST /api/matrix/(:id)',
@@ -135,7 +161,10 @@ def api(any=None):
     if not any:
         return jsonify(resources)
     else:
-        if any == 'auth' and request.method != 'POST':
+        if any == 'auth' and request.method == 'POST':
+            user = authenticate(request.data['username'], request.data['password'])
+            if user:
+                return jsonify('Welcome :)')    
             return jsonify('Method not allowed, sucker!')
         if any == 'matrix':
             db_matrixs = Matrix.query.order_by(Matrix.name)
@@ -170,10 +199,9 @@ def api(any=None):
         return jsonify('nada')
 
 
+
+
 @app.route('/')
 @app.route('/<any>')
 def spa(any=None):
     return render_template('index.html', any=any)
-
-
-            

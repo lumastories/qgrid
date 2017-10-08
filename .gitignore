@@ -3,3 +3,4 @@ __pycache__/
 env/
 elm-stuff/
 node_modules/
+static/app.js
